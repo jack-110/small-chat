@@ -3,21 +3,37 @@ package org.example.demo;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class Server {
     private static final Logger logger = Logger.getLogger(Server.class.getName());
 
     public static final int SERVER_PORT = 8080;
-    private static final int MAX_CLIENTS = 1000;
+    private static final int MAX_CLIENTS = 5;
+    private final List<Client> clients = new ArrayList<>();
 
-    public static void main(String[] args) {
+    public void start() {
         try (ServerSocket server = new ServerSocket(SERVER_PORT)) {
-            Socket client = server.accept();
-            //handle client connections
-            logger.info("Client " + client.getInetAddress() + "is connecting.");
+            while (true) {
+                Socket socket = server.accept();
+                Client client = createClient(socket);
+            }
         } catch (IOException exception) {
             logger.warning("Failed to create a server: " + exception.getMessage());
         }
+    }
+
+    private Client createClient(Socket socket) {
+        assert clients.size() < MAX_CLIENTS;
+        Client client = new Client(socket, "user" + clients.size());
+        clients.add(client);
+        return client;
+    }
+
+    public static void main(String[] args) {
+        Server server = new Server();
+        server.start();
     }
 }
