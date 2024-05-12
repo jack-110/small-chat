@@ -1,6 +1,8 @@
 package org.example.demo;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -19,6 +21,9 @@ public class Server {
             while (true) {
                 Socket socket = server.accept();
                 Client client = createClient(socket);
+                OutputStream outputStream = client.socket().getOutputStream();
+                outputStream.write("welcome to my chat room".getBytes());
+                outputStream.flush();
             }
         } catch (IOException exception) {
             logger.warning("Failed to create a server: " + exception.getMessage());
